@@ -1,9 +1,3 @@
-import os
-from guitarmarket.main import run
-
-os.system("playwright install chromium")
-
-# Handle SQLite for ChromaDB
 try:
     __import__('pysqlite3')
     import sys
@@ -11,6 +5,9 @@ try:
 except (ImportError, KeyError):
     pass
 
+
+import os
+from guitarmarket.main import run
 import sys
 import streamlit as st
 
