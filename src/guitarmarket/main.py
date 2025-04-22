@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import sys
 import warnings
+import requests
 
 from datetime import datetime
 
-from guitarmarket.crew import Guitarmarket
+from guitarmarket.crew import Guitarmarket, GuitarComparisonClass
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -17,12 +18,31 @@ def run():
     """
     Run the crew.
     """
-    inputs = {
-        'topic': 'Guitar'
-    }
+
+    # api call here for listing scraper.
+    listing_data = '{"marketGuitars": [], "listingGuitars": [ {"Model": Fender Stratocaster", "Price": 950.00, "Condition": "good"}]}'
     
+
+
+    inputs = {
+        'topic': 'Guitar',
+        'listing_data': listing_data
+    }
     try:
-        Guitarmarket().crew().kickoff(inputs=inputs)
+        result = Guitarmarket().crew().kickoff(inputs=inputs)
+    except Exception as e:
+        raise Exception(f"An error occurred while running the crew: {e}")
+    
+    # api call for guitar center scraper
+
+    print(f"Result: {(result.raw)}")
+    
+    inputs = {
+        'listing_data': listing_data,
+        'market_data': result.raw
+    }
+    try:
+        GuitarComparisonClass().crew().kickoff(inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 

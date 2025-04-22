@@ -31,15 +31,12 @@ email_address = os.getenv("EMAIL_ADDRESS")
 email_password = os.getenv("EMAIL_PASSWORD")
 
 @CrewBase
-class Guitarmarket():
-	"""GuitarMarketplace crew"""
+class GuitarComparisonClass():
+	"""GuitarComparison crew"""
+
 
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
-	vision_tool = VisionTool()
-
-	# listing_read_tool = FileReadTool(file_path='src/crewaisimple/guitar_listings.csv')
-	# market_read_tool = FileReadTool(file_path='src/crewaisimple/market_listings.csv')
 
 	@tool("comparison tool")
 	def comparison_tool(listing_json: str) -> str:
@@ -76,6 +73,70 @@ class Guitarmarket():
 				comparison += f"No market data found for {listing.Model}.\n"
 				
 		return comparison
+
+	@tool("email_sender_tool")
+	def email_sender_tool(email_body: str) -> str:
+		"""This tool takes in the body of an email and then composes and sends an email. 
+			Returns a string saying it was successful or an error message"""
+		msg = EmailMessage()
+		msg.set_content(email_body)
+
+		msg['Subject'] = "Guitar Comparisons"
+		msg['From'] = email_address
+		msg['To'] = email_address
+
+		try:
+			with smtplib.SMTP('smtp.gmail.com', 587) as server:
+				server.ehlo()          # Identify with the server
+				server.starttls()      # Secure the connection
+				server.ehlo()          # Re-identify after starting TLS
+				server.login(email_address, email_password)
+				server.send_message(msg)
+			return("Successfull")
+		except Exception as e:
+			return(f"An error occurred: {e}")
+
+	@agent
+	def comparison_agent(self) -> Agent:
+		return Agent(
+			config=self.agents_config['comparison_agent'],
+			tools=[self.comparison_tool, self.email_sender_tool],
+			verbose=True,
+			# llm=self.llm
+		)
+	
+	@task
+	def comparison_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['comparison_task'],
+			agent=self.comparison_agent(),
+		)
+	
+	@crew
+	def crew(self) -> Crew:
+		"""Creates the Crewaisimple crew"""
+
+		return Crew(
+			agents=self.agents, # Automatically created by the @agent decorator
+			tasks=self.tasks, # Automatically created by the @task decorator
+			process=Process.sequential,
+			# process=Process.hierarchical,
+			rules=["Agents may only use provided knowledge, tools, and memory"],
+			verbose=True,
+			
+		)
+
+
+@CrewBase
+class Guitarmarket():
+	"""GuitarMarketplace crew"""
+
+	agents_config = 'config/agents.yaml'
+	tasks_config = 'config/tasks.yaml'
+
+	# listing_read_tool = FileReadTool(file_path='src/crewaisimple/guitar_listings.csv')
+	# market_read_tool = FileReadTool(file_path='src/crewaisimple/market_listings.csv')
+
 
 	@tool("scraper tool")
 	def scraper_tool() -> str:
@@ -203,10 +264,10 @@ class Guitarmarket():
 					page.wait_for_selector('button[class="absolute right-0 top-0 w-[56px] h-full flex items-center justify-center cursor-pointer"]').click()
 					time.sleep(1)
 					current_url = page.url
-					# current_url += '&filters=condition:New'
-					# page.goto(current_url)
+					current_url += '&filters=condition:New'
+					page.goto(current_url)
 					time.sleep(2)
-					page.mouse.wheel(0,750)
+					page.mouse.wheel(0,500)
 
 					parsed = []
 					html = page.content()
@@ -217,7 +278,7 @@ class Guitarmarket():
 					for list in listings:
 							title = list.find('h2','jsx-f0e60c587809418b').text
 							print("Title was found")
-							price = list.find('span', 'jsx-f0e60c587809418b sale-price').text
+							price = list.find('span', 'jsx-f0e60c587809418b sale-price font-bold text-[#2d2d2d]').text
 							print(f"Title found: {title}, Price found: {price}")
 							market_list.append({
 									'Model' : _model,
@@ -229,29 +290,6 @@ class Guitarmarket():
 					time.sleep(3)
 					browser.close
 		return market_list
-
-
-	@tool("email_sender_tool")
-	def email_sender_tool(email_body: str) -> str:
-		"""This tool takes in the body of an email and then composes and sends an email. 
-			Returns a string saying it was successful or an error message"""
-		msg = EmailMessage()
-		msg.set_content(email_body)
-
-		msg['Subject'] = "Guitar Comparisons"
-		msg['From'] = email_address
-		msg['To'] = email_address
-
-		try:
-			with smtplib.SMTP('smtp.gmail.com', 587) as server:
-				server.ehlo()          # Identify with the server
-				server.starttls()      # Secure the connection
-				server.ehlo()          # Re-identify after starting TLS
-				server.login(email_address, email_password)
-				server.send_message(msg)
-			return("Successfull")
-		except Exception as e:
-			return(f"An error occurred: {e}")
 
 	@tool("img_get_tool")
 	def img_get_tool(listing_json: str) -> dict:
@@ -331,17 +369,6 @@ class Guitarmarket():
     	}
 			
 	
-	
-	@agent
-	def listing_finder(self) -> Agent:
-		return Agent(
-			config=self.agents_config['listing_finder'],
-			# knowledge=[self.listing_source],
-			tools=[self.scraper_tool],
-			verbose=True,
-			# llm=self.llm
-		)
-	
 	@agent
 	def img_comparison(self) -> Agent:
 		return Agent(
@@ -350,52 +377,16 @@ class Guitarmarket():
 			verbose=True
 		)
 	
-	@agent
-	def market_value_finder(self) -> Agent:
-		return Agent(
-			config=self.agents_config['market_value_finder'],
-			tools=[self.gc_scraper_tool],
-			verbose=True,
-		)
-	
-	@agent
-	def comparison_agent(self) -> Agent:
-		return Agent(
-			config=self.agents_config['comparison_agent'],
-			tools=[self.comparison_tool, self.email_sender_tool],
-			verbose=True,
-			# llm=self.llm
-		)
-
-	# https://docs.crewai.com/concepts/tasks#overview-of-a-task
-	@task
-	def listing_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['listing_task'],
-			output_model=ListingJson
-		)
 	
 
 	@task
 	def img_analyze_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['img_analyze_task'],
+			agent=self.img_comparison(),
 			output_model=ListingJson
 		)
 	
-	@task
-	def market_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['market_task'],
-			output_model=ListingJson
-		)
-	
-	@task
-	def comparison_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['comparison_task'],
-		)
-
 
 	@crew
 	def crew(self) -> Crew:
