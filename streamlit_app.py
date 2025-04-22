@@ -1,11 +1,10 @@
 # __import__('pysqlite3')
-# import sys
 # sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-
-
 import os
-from guitarmarket.main import run
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
+from src.guitarmarket.main import run
 import streamlit as st
 
 
