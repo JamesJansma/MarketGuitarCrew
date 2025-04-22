@@ -22,7 +22,7 @@ st.title('Your Guitar Price Comparison')
 with st.sidebar:
     st.header('Enter FB Login')
     topic = st.text_input("Username")
-    detailed_questions = st.("Password")
+    detailed_questions = st.text_input("Password", type='password')
 
 if st.button('Run Research'):
     
