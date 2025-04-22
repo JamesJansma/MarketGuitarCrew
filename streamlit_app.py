@@ -25,4 +25,6 @@ with st.sidebar:
     detailed_questions = st.text_input("Password", type='password')
 
 if st.button('Run Research'):
-    
+    with st.spinner("Please wait while we gather information..."):
+        run()
+    st.write("Process is complete")
