@@ -1,8 +1,54 @@
 listing_task:
   description: >
-    Using your tool to get the listings for guitar. When using the tool make sure to wait for an output before trying anything else.
-    The tool once it is finally done running will return a json with "Model", "Price", "Condition"
+    You are given a string of a json containing data of guitar listings. You will take this input and organize it in the specified pydantic format. Here is your input
+      "listingGuitars": [
+        
+          "Model": "WINZZ 40-Inch Beginner Cutaway Acoustic Guitar",
+          "Price": 150.0,
+          "Condition": "new"
+        
+          "Model": "Brand New Yamaha APX2TEW Acoustic Guitar, 3/4 size",
+          "Price": 240.0,
+          "Condition": "new"
+        ,
+        
+          "Model": "AIERSI Telecaster Guitars",
+          "Price": 100.0,
+          "Condition": "new"
+        ,
+        
+          "Model": "Guitar",
+          "Price": 75.0,
+          "Condition": "used_like_new"
+        ,
+        
+          "Model": "Yamaha Guitar",
+          "Price": 100.0,
+          "Condition": "used_like_new"
+        ,
+        
+          "Model": "Star caster electric guitar",
+          "Price": 75.0,
+          "Condition": "used_like_new"
+        ,
+        
+          "Model": "Acoustic and Electric Guitar with accessories",
+          "Price": 185.0,
+          "Condition": "used_good"
+        ,
+        
+          "Model": "Acoustic Guitar",
+          "Price": 40.0,
+          "Condition": "used_good"
+        ,
+        
+          "Model": "Guitar",
+          "Price": 25.0,
+          "Condition": "used_good"
+        
+      
   expected_output: >
+    
     The output will need to be in the form of a nested json with this structure. With only the Listing Guitars filled out.
     class GuitarData(BaseModel):
       Model: str
@@ -36,9 +82,75 @@ img_analyze_task:
 
 market_task:
   description: >
-    Give the tool only the new ListingJson object with the update Model names. Pass the object as a string. 
-    Then you will wait for the tool to return its value before saving that data in a json form. The values returned from 
-    the tool will be the market guitars and will be a json of the form 'Model','Price','Condition'.
+    You are given data on market guitars. If there is sufficent data you will need to put it into the marketGuitars of the pydantic json.
+    Here is your data: 
+    
+      "marketGuitars": [
+        
+          "Model": "Yamaha APXT2EW",
+          "Price": 239.99,
+          "Condition": "new"
+        ,
+        
+          "Model": "Guitar",
+          "Price": 699.99,
+          "Condition": "new"
+        ,
+        
+          "Model": "Yamaha Guitar",
+          "Price": 149.99,
+          "Condition": "new"
+        ,
+        
+          "Model": "Star caster electric guitar",
+          "Price": 1199.99,
+          "Condition": "new"
+        ,
+        
+          "Model": "Acoustic and Electric Guitar with accessories",
+          "Price": 629.99,
+          "Condition": "new"
+        ,
+        
+          "Model": "Acoustic Guitar",
+          "Price": 149.99,
+          "Condition": "new"
+        
+      ],
+      "listingGuitars": [
+        
+          "Model": "WINZZ 40-Inch Beginner Cutaway Acoustic Guitar",
+          "Price": 150.0,
+          "Condition": "new"
+        ,
+        
+          "Model": "Yamaha APXT2EW",
+          "Price": 240.0,
+          "Condition": "new"
+        ,
+        
+          "Model": "Aiersi TL-10",
+          "Price": 100.0,
+          "Condition": "new"
+        ,
+        
+          "Model": "Fender Starcaster",
+          "Price": 75.0,
+          "Condition": "used_like_new"
+        ,
+        
+          "Model": "Epiphone Les Paul Special",
+          "Price": 185.0,
+          "Condition": "used_good"
+        ,
+        
+          "Model": "Ashthorpe Model B24",
+          "Price": 25.0,
+          "Condition": "used_good"
+        
+      ]
+    
+    
   expected_output: >
     The output will need to be in the form of a nested json with this structure. With you only filling in data in the marketGuitars
     class GuitarData(BaseModel):

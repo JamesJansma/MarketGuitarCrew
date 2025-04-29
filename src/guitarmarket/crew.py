@@ -212,25 +212,12 @@ class Guitarmarket():
 
 			for j in range(4):
 				
-				path = f"images/guitar_{i}/image_{j}.jpg"
-
-				if not os.path.exists(path):
-					print(f"Image not found at: {path}")
-					updated_listings.append(listing.model_dump())
-					continue
-
-				with Image.open(path) as img:
-					if img.mode in ("RGBA", "P"):
-						img = img.convert("RGB")
-					buffer = BytesIO()
-					img.save(buffer, format="jpeg")
-					buffer.seek(0)
-					base64_image = base64.b64encode(buffer.read()).decode("utf-8")
+				url = f"https://your-render-app.onrender.com/static/images/guitar_{i}/image_{j}.jpg"
 
 				image_messages.append({
 					"type": "image_url",
 					"image_url": {
-						"url": f"data:image/jpeg;base64,{base64_image}",
+						"url": url,
 						"detail": "high"
 					}
 				})
@@ -335,7 +322,7 @@ class Guitarmarket():
 		return Agent(
 			config=self.agents_config['listing_finder'],
 			# knowledge=[self.listing_source],
-			tools=[self.scraper_tool],
+			tools=[],
 			verbose=True,
 			# llm=self.llm
 		)
@@ -352,7 +339,7 @@ class Guitarmarket():
 	def market_value_finder(self) -> Agent:
 		return Agent(
 			config=self.agents_config['market_value_finder'],
-			tools=[self.gc_scraper_tool],
+			tools=[],
 			verbose=True,
 		)
 	
