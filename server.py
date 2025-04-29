@@ -9,6 +9,9 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+class RunCrewInput(BaseModel):
+    email: str
+    password: str
 
 @app.get("/api/hello")
 def hello():
@@ -16,9 +19,13 @@ def hello():
 
 
 @app.post("/api/runcrew")
-def run_full_pipeline():
+def run_full_pipeline(input_data: RunCrewInput):
     try:
-        result = Guitarmarket().crew().kickoff(inputs={"topic": "Guitar"})
+        result = Guitarmarket().crew().kickoff(inputs={
+            "topic": "Guitar",
+            "email": input_data.email,
+            "password": input_data.password
+            })
         return result.raw
     except Exception as e:
         raise HTTPException(500, f"Pipeline failed: {e}")

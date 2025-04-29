@@ -97,8 +97,8 @@ market_task:
           "Condition": "new"
         ,
         
-          "Model": "Yamaha Guitar",
-          "Price": 149.99,
+          "Model": "Aiersi TL-10",
+          "Price": 199.99,
           "Condition": "new"
         ,
         
@@ -167,7 +167,8 @@ market_task:
 
 comparison_task:
   description: >
-    Using the comparison tool give the newest ListingJson data structure. Pass the json into the tool as a string. 
+    Using the comparison tool give the newest ListingJson data structure. Pass the json into the tool as a string. You then use
+    the email tool with this email and password: Email: {email}, Password: {password}
   expected_output: > 
     No output other than sending an email. 
   agent: comparison_agent

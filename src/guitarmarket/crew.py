@@ -212,7 +212,7 @@ class Guitarmarket():
 
 			for j in range(4):
 				
-				url = f"https://your-render-app.onrender.com/static/images/guitar_{i}/image_{j}.jpg"
+				url = f"https://marketguitarcrew.onrender.com/static/images/guitar_{i}/image_{j}.jpg"
 
 				image_messages.append({
 					"type": "image_url",
@@ -296,22 +296,23 @@ class Guitarmarket():
 		return comparison
 
 	@tool("email_sender_tool")
-	def email_sender_tool(email_body: str) -> str:
-		"""This tool takes in the body of an email and then composes and sends an email. 
+	def email_sender_tool(email_body: str, email: str, password: str) -> str:
+		"""This tool takes in the body of an email along with an email and password
+		  and then composes and sends an email. 
 			Returns a string saying it was successful or an error message"""
 		msg = EmailMessage()
 		msg.set_content(email_body)
 
 		msg['Subject'] = "Guitar Comparisons"
-		msg['From'] = email_address
-		msg['To'] = email_address
+		msg['From'] = email
+		msg['To'] = email
 
 		try:
 			with smtplib.SMTP('smtp.gmail.com', 587) as server:
 				server.ehlo()          # Identify with the server
 				server.starttls()      # Secure the connection
 				server.ehlo()          # Re-identify after starting TLS
-				server.login(email_address, email_password)
+				server.login(email, password)
 				server.send_message(msg)
 			return("Successfull")
 		except Exception as e:
