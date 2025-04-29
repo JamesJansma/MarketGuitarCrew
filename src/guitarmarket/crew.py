@@ -49,7 +49,7 @@ class Guitarmarket():
 
 		facebook_market_url = 'https://www.facebook.com/marketplace/spokane/search/?query=guitar&exact=false'
 		login_url = "https://www.facebook.com/login/device-based/regular/login/"
-		conditions = ['new']
+		conditions = ['new','used_like_new', 'used_good']
 
 		print("Scraper tool called")
 		parsed = []
@@ -72,7 +72,7 @@ class Guitarmarket():
 				print("login failed")
 
 			parsed = []
-
+			i = 0
 			for condition in conditions:
 				facebook_market_condition_url = f'https://www.facebook.com/marketplace/spokane/search?itemCondition={condition}&query=guitar&exact=false'
 				print(f"Going to page: {facebook_market_condition_url}")
@@ -111,30 +111,31 @@ class Guitarmarket():
 						})
 					
 					try:
-						os.makedirs(f"images/guitar_{j}", exist_ok=True)
-						print(f"Created image directory: \"images/guitar_{j}\"")
+						os.makedirs(f"images/guitar_{i}", exist_ok=True)
+						print(f"Created image directory: \"images/guitar_{i}\"")
 					except:
 						print("Was not able to create directory \"images/guitar_{j}\"")
 		   
 					if len(images) == 0:
 						img_url = listing.find('img').get('src')
 						img_data = requests.get(img_url).content
-						with open(f"images/guitar_{j}/image_{0}.jpg", "wb") as img_file:
+						with open(f"images/guitar_{i}/image_{0}.jpg", "wb") as img_file:
 							img_file.write(img_data)
+						
 					else:
-						for i, image in enumerate(images):
+						for k, image in enumerate(images):
 							try:
 								img_url = image.find('img').get('src')
-								print(f"Img url: {img_url}")
 								img_data = requests.get(img_url).content
 
-								with open(f"images/guitar_{j}/image_{i}.jpg", "wb") as img_file:
+								with open(f"images/guitar_{i}/image_{k}.jpg", "wb") as img_file:
 									img_file.write(img_data)
 							except:
 								print("there was no image found")
 								pass
 						
 					page.go_back()
+					i += 1
 					time.sleep(1)
 
 			browser.close()
@@ -210,6 +211,7 @@ class Guitarmarket():
 			image_messages = []
 
 			for j in range(4):
+				
 				path = f"images/guitar_{i}/image_{j}.jpg"
 
 				if not os.path.exists(path):
