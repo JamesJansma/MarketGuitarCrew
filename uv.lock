@@ -541,11 +541,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b0/15/47cb5ff6d5eb286377b312d8d9ed0a3c1472bef41ec90bafffaf285b80e3/crewai-0.102.0-py3-none-any.whl", hash = "sha256:af9ce144fa48cb0314946b509b0d415f01af3066fa2cfb42f27e05df3fb6539e", size = 240224 },
 ]
 
-[package.optional-dependencies]
-tools = [
-    { name = "crewai-tools" },
-]
-
 [[package]]
 name = "crewai-tools"
 version = "0.36.0"
@@ -1212,14 +1207,32 @@ name = "guitarmarket"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "crewai", extra = ["tools"] },
+    { name = "beautifulsoup4" },
+    { name = "crewai" },
+    { name = "crewai-tools" },
+    { name = "fastapi" },
+    { name = "litellm" },
+    { name = "pillow" },
     { name = "playwright" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "requests" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "crewai", extras = ["tools"], specifier = ">=0.102.0,<1.0.0" },
+    { name = "beautifulsoup4", specifier = ">=4.12.3" },
+    { name = "crewai", specifier = ">=0.102.0" },
+    { name = "crewai-tools", specifier = ">=0.4.0" },
+    { name = "fastapi", specifier = ">=0.110.0" },
+    { name = "litellm", specifier = ">=0.1.570" },
+    { name = "pillow", specifier = ">=10.3.0" },
     { name = "playwright", specifier = ">=1.41.0" },
+    { name = "pydantic", specifier = ">=2.6.0" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
+    { name = "requests", specifier = ">=2.31.0" },
+    { name = "uvicorn", specifier = ">=0.29.0" },
 ]
 
 [[package]]

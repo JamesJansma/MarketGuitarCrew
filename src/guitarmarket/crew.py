@@ -31,103 +31,6 @@ email_address = os.getenv("EMAIL_ADDRESS")
 email_password = os.getenv("EMAIL_PASSWORD")
 
 @CrewBase
-class GuitarComparisonClass():
-	"""GuitarComparison crew"""
-
-
-	agents_config = 'config/agents.yaml'
-	tasks_config = 'config/tasks.yaml'
-
-	@tool("comparison tool")
-	def comparison_tool(listing_json: str) -> str:
-		"""Takes a json including the all the data for the guitars. The tool then compares the prices
-			and returns a string with the output of the comparisons"""
-		
-		try:
-			# Convert the JSON string into a ListingJson object
-			print("Incoming listing_json (type):", type(listing_json))
-			listing_json = ListingJson.model_validate_json(listing_json)
-		except ValidationError as e:
-			return f"Error parsing input data: {e}"
-		
-		comparison = "Data post comparisons:\n"
-
-		market_dict = {guitar.Model: guitar.Price for guitar in listing_json.marketGuitars}
-
-
-		for listing in listing_json.listingGuitars:
-			market_price = market_dict.get(listing.Model)
-
-			if market_price:
-				if listing.Price < market_price:
-					comparison += (
-						f"The listing price for {listing.Model} is better than the market value.\n"
-						f"Listing value: {listing.Price}, Market value: {market_price}\n"
-					)
-				else:
-					comparison += (
-						f"The market price for {listing.Model} is better than the listing value.\n"
-						f"Listing value: {listing.Price}, Market value: {market_price}\n"
-					)
-			else:
-				comparison += f"No market data found for {listing.Model}.\n"
-				
-		return comparison
-
-	@tool("email_sender_tool")
-	def email_sender_tool(email_body: str) -> str:
-		"""This tool takes in the body of an email and then composes and sends an email. 
-			Returns a string saying it was successful or an error message"""
-		msg = EmailMessage()
-		msg.set_content(email_body)
-
-		msg['Subject'] = "Guitar Comparisons"
-		msg['From'] = email_address
-		msg['To'] = email_address
-
-		try:
-			with smtplib.SMTP('smtp.gmail.com', 587) as server:
-				server.ehlo()          # Identify with the server
-				server.starttls()      # Secure the connection
-				server.ehlo()          # Re-identify after starting TLS
-				server.login(email_address, email_password)
-				server.send_message(msg)
-			return("Successfull")
-		except Exception as e:
-			return(f"An error occurred: {e}")
-
-	@agent
-	def comparison_agent(self) -> Agent:
-		return Agent(
-			config=self.agents_config['comparison_agent'],
-			tools=[self.comparison_tool, self.email_sender_tool],
-			verbose=True,
-			# llm=self.llm
-		)
-	
-	@task
-	def comparison_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['comparison_task'],
-			agent=self.comparison_agent(),
-		)
-	
-	@crew
-	def crew(self) -> Crew:
-		"""Creates the Crewaisimple crew"""
-
-		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
-			process=Process.sequential,
-			# process=Process.hierarchical,
-			rules=["Agents may only use provided knowledge, tools, and memory"],
-			verbose=True,
-			
-		)
-
-
-@CrewBase
 class Guitarmarket():
 	"""GuitarMarketplace crew"""
 
@@ -368,6 +271,73 @@ class Guitarmarket():
         "listingGuitars": updated_listings
     	}
 			
+	@tool("comparison tool")
+	def comparison_tool(listing_json: str) -> str:
+		"""Takes a json including the all the data for the guitars. The tool then compares the prices
+			and returns a string with the output of the comparisons"""
+		
+		try:
+			# Convert the JSON string into a ListingJson object
+			print("Incoming listing_json (type):", type(listing_json))
+			listing_json = ListingJson.model_validate_json(listing_json)
+		except ValidationError as e:
+			return f"Error parsing input data: {e}"
+		
+		comparison = "Data post comparisons:\n"
+
+		market_dict = {guitar.Model: guitar.Price for guitar in listing_json.marketGuitars}
+
+
+		for listing in listing_json.listingGuitars:
+			market_price = market_dict.get(listing.Model)
+
+			if market_price:
+				if listing.Price < market_price:
+					comparison += (
+						f"The listing price for {listing.Model} is better than the market value.\n"
+						f"Listing value: {listing.Price}, Market value: {market_price}\n"
+					)
+				else:
+					comparison += (
+						f"The market price for {listing.Model} is better than the listing value.\n"
+						f"Listing value: {listing.Price}, Market value: {market_price}\n"
+					)
+			else:
+				comparison += f"No market data found for {listing.Model}.\n"
+				
+		return comparison
+
+	@tool("email_sender_tool")
+	def email_sender_tool(email_body: str) -> str:
+		"""This tool takes in the body of an email and then composes and sends an email. 
+			Returns a string saying it was successful or an error message"""
+		msg = EmailMessage()
+		msg.set_content(email_body)
+
+		msg['Subject'] = "Guitar Comparisons"
+		msg['From'] = email_address
+		msg['To'] = email_address
+
+		try:
+			with smtplib.SMTP('smtp.gmail.com', 587) as server:
+				server.ehlo()          # Identify with the server
+				server.starttls()      # Secure the connection
+				server.ehlo()          # Re-identify after starting TLS
+				server.login(email_address, email_password)
+				server.send_message(msg)
+			return("Successfull")
+		except Exception as e:
+			return(f"An error occurred: {e}")
+	
+	@agent
+	def listing_finder(self) -> Agent:
+		return Agent(
+			config=self.agents_config['listing_finder'],
+			# knowledge=[self.listing_source],
+			tools=[self.scraper_tool],
+			verbose=True,
+			# llm=self.llm
+		)
 	
 	@agent
 	def img_comparison(self) -> Agent:
@@ -377,16 +347,51 @@ class Guitarmarket():
 			verbose=True
 		)
 	
+	@agent
+	def market_value_finder(self) -> Agent:
+		return Agent(
+			config=self.agents_config['market_value_finder'],
+			tools=[self.gc_scraper_tool],
+			verbose=True,
+		)
+	
+	@agent
+	def comparison_agent(self) -> Agent:
+		return Agent(
+			config=self.agents_config['comparison_agent'],
+			tools=[self.comparison_tool, self.email_sender_tool],
+			verbose=True,
+			# llm=self.llm
+		)
+
+	# https://docs.crewai.com/concepts/tasks#overview-of-a-task
+	@task
+	def listing_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['listing_task'],
+			output_model=ListingJson
+		)
 	
 
 	@task
 	def img_analyze_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['img_analyze_task'],
-			agent=self.img_comparison(),
 			output_model=ListingJson
 		)
 	
+	@task
+	def market_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['market_task'],
+			output_model=ListingJson
+		)
+	
+	@task
+	def comparison_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['comparison_task'],
+		)
 
 	@crew
 	def crew(self) -> Crew:
@@ -399,5 +404,4 @@ class Guitarmarket():
 			# process=Process.hierarchical,
 			rules=["Agents may only use provided knowledge, tools, and memory"],
 			verbose=True,
-			
 		)

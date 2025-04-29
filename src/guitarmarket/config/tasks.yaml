@@ -1,11 +1,7 @@
-img_analyze_task:
-  description: > 
-    Use the provided tool to analyze the images of the listing. Provide the tool with the ListingJson data object. Pass the tool
-    the json as a string. The tool will return the same format you 
-    put into the function except with the new names. Delete the entire old ListingJson object and create a new one. In the new ListingJson
-    object only include entries that have a Model that was found by the tool. If a model cannot be determined do not include it.
-    If a model is determined then change that entry to be only the Model name.
-    The data you are to use is here: {listing_data}.
+listing_task:
+  description: >
+    Using your tool to get the listings for guitar. When using the tool make sure to wait for an output before trying anything else.
+    The tool once it is finally done running will return a json with "Model", "Price", "Condition"
   expected_output: >
     The output will need to be in the form of a nested json with this structure. With only the Listing Guitars filled out.
     class GuitarData(BaseModel):
@@ -16,15 +12,50 @@ img_analyze_task:
     class ListingJson(BaseModel):
       marketGuitars: List[GuitarData]  
       listingGuitars: List[GuitarData] 
+  agent: listing_finder
+
+
+img_analyze_task:
+  description: > 
+    Use the provided tool to analyze the images of the listing. Provide the tool with the ListingJson data object. Pass the tool
+    the json as a string. The tool will return the same format you 
+    put into the function except with the new names. Delete the entire old ListingJson object and create a new one. In the new ListingJson
+    object only include entries that have a Model that was found by the tool. If a model cannot be determined do not include it.
+    If a model is determined then change that entry to be only the Model name.
+  expected_output: >
+    The output will need to be in the form of a nested json with this structure. With only the Listing Guitars filled out.
+    class GuitarData(BaseModel):
+      Model: str
+      Price: float
+      Condition: str
+
+    class ListingJson(BaseModel):
+      marketGuitars: List[GuitarData]  
+      listingGuitars: List[GuitarData] 
+  agent: img_comparison
+
+market_task:
+  description: >
+    Give the tool only the new ListingJson object with the update Model names. Pass the object as a string. 
+    Then you will wait for the tool to return its value before saving that data in a json form. The values returned from 
+    the tool will be the market guitars and will be a json of the form 'Model','Price','Condition'.
+  expected_output: >
+    The output will need to be in the form of a nested json with this structure. With you only filling in data in the marketGuitars
+    class GuitarData(BaseModel):
+      Model: str
+      Price: float
+      Condition: str
+
+    class ListingJson(BaseModel):
+      marketGuitars: List[GuitarData]  
+      listingGuitars: List[GuitarData] 
+
+
+  agent: market_value_finder
 
 comparison_task:
   description: >
-    Using the comparison tool give the newest ListingJson data structure. Pass the json into the tool as a string. Once you get your
-    response organize it. If there are comparisons with no market data found then do not include it 
-    in the email_send_tool. Pass only the information with market data as a string into the email_send_tool. 
+    Using the comparison tool give the newest ListingJson data structure. Pass the json into the tool as a string. 
   expected_output: > 
-    Once you have your final answer insert it into the email_sender_tool as it will send a email. 
-
-
-
-
+    No output other than sending an email. 
+  agent: comparison_agent

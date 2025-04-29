@@ -1,0 +1,19 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Guitar Marketplace Scraper</title></head>
+<body>
+  <h1>Guitar Scraper</h1>
+
+  <button onclick="scrape()">Scrape Facebook Marketplace</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function scrape() {
+      const response = await fetch('http://localhost:8000/api/runcrew');
+      const data = await response.json();
+      document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
