@@ -12,7 +12,7 @@ listing_task:
     class ListingJson(BaseModel):
       marketGuitars: List[GuitarData]  
       listingGuitars: List[GuitarData] 
-  agent: listing_finder
+  agent: facebook_listing_agent
 
 
 img_analyze_task:

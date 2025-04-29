@@ -1,4 +1,4 @@
-listing_finder:
+facebook_listing_agent:
   role: >
     {topic} listing finder.
   goal: >

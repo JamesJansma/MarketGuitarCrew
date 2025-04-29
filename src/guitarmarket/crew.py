@@ -55,7 +55,7 @@ class Guitarmarket():
 		parsed = []
 
 		with sync_playwright() as p:
-			browser = p.chromium.launch(headless=True)
+			browser = p.chromium.launch(headless=False)
 			page = browser.new_page()
 			page.goto(login_url)
 			time.sleep(2)
@@ -77,8 +77,6 @@ class Guitarmarket():
 				facebook_market_condition_url = f'https://www.facebook.com/marketplace/spokane/search?itemCondition={condition}&query=guitar&exact=false'
 				print(f"Going to page: {facebook_market_condition_url}")
 				page.goto(facebook_market_condition_url, timeout=90000)
-				time.sleep(2)
-				page.mouse.wheel(0, 1000)  # Scroll down a bit to trigger lazy load
 				time.sleep(2)
 
 				divs = page.locator('div.x9f619.x78zum5.x1r8uery.xdt5ytf.x1iyjqo2.xs83m0k.x1e558r4.x150jy0e.x1iorvi4.xjkvuk6.xnpuxes.x291uyu.x1uepa24')
@@ -331,9 +329,9 @@ class Guitarmarket():
 			return(f"An error occurred: {e}")
 	
 	@agent
-	def listing_finder(self) -> Agent:
+	def facebook_listing_agent(self) -> Agent:
 		return Agent(
-			config=self.agents_config['listing_finder'],
+			config=self.agents_config['facebook_listing_agent'],
 			# knowledge=[self.listing_source],
 			tools=[self.scraper_tool],
 			verbose=True,
