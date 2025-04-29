@@ -55,7 +55,7 @@ class Guitarmarket():
 		parsed = []
 
 		with sync_playwright() as p:
-			browser = p.chromium.launch(headless=False, slow_mo=500)
+			browser = p.chromium.launch(headless=True)
 			page = browser.new_page()
 			page.goto(login_url)
 			time.sleep(2)
@@ -76,7 +76,7 @@ class Guitarmarket():
 			for condition in conditions:
 				facebook_market_condition_url = f'https://www.facebook.com/marketplace/spokane/search?itemCondition={condition}&query=guitar&exact=false'
 				print(f"Going to page: {facebook_market_condition_url}")
-				page.goto(facebook_market_condition_url)
+				page.goto(facebook_market_condition_url, timeout=90000)
 				time.sleep(2)
 
 				divs = page.locator('div.x9f619.x78zum5.x1r8uery.xdt5ytf.x1iyjqo2.xs83m0k.x1e558r4.x150jy0e.x1iorvi4.xjkvuk6.xnpuxes.x291uyu.x1uepa24')
