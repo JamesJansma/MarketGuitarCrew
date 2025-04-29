@@ -78,6 +78,8 @@ class Guitarmarket():
 				print(f"Going to page: {facebook_market_condition_url}")
 				page.goto(facebook_market_condition_url, timeout=90000)
 				time.sleep(2)
+				page.mouse.wheel(0, 1000)  # Scroll down a bit to trigger lazy load
+				time.sleep(2)
 
 				divs = page.locator('div.x9f619.x78zum5.x1r8uery.xdt5ytf.x1iyjqo2.xs83m0k.x1e558r4.x150jy0e.x1iorvi4.xjkvuk6.xnpuxes.x291uyu.x1uepa24')
 				count = divs.count()
