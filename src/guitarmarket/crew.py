@@ -157,7 +157,7 @@ class Guitarmarket():
 
 			with sync_playwright() as p:
 					# Open a new browser page.
-					browser = p.chromium.launch(headless=False)
+					browser = p.chromium.launch(headless=True)
 					page = browser.new_page()
 					# Navigate to the URL.
 					page.goto(start_up_url)
@@ -166,9 +166,6 @@ class Guitarmarket():
 					time.sleep(1)  
 					page.wait_for_selector('button[class="absolute right-0 top-0 w-[56px] h-full flex items-center justify-center cursor-pointer"]').click()
 					time.sleep(1)
-					current_url = page.url
-					current_url += '&filters=condition:New'
-					page.goto(current_url)
 					time.sleep(2)
 					page.mouse.wheel(0,500)
 
