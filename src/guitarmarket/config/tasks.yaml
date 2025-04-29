@@ -168,7 +168,7 @@ market_task:
 comparison_task:
   description: >
     Using the comparison tool give the newest ListingJson data structure. Pass the json into the tool as a string. You then use
-    the email tool with this email and password: Email: {email}, Password: {password}
+    the email tool with this email: Email: {email}
   expected_output: > 
     No output other than sending an email. 
   agent: comparison_agent

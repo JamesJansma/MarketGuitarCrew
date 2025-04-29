@@ -11,7 +11,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 class RunCrewInput(BaseModel):
     email: str
-    password: str
 
 @app.get("/api/hello")
 def hello():
@@ -23,8 +22,7 @@ def run_full_pipeline(input_data: RunCrewInput):
     try:
         result = Guitarmarket().crew().kickoff(inputs={
             "topic": "Guitar",
-            "email": input_data.email,
-            "password": input_data.password
+            "email": input_data.email
             })
         return result.raw
     except Exception as e:

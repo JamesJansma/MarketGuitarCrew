@@ -296,7 +296,7 @@ class Guitarmarket():
 		return comparison
 
 	@tool("email_sender_tool")
-	def email_sender_tool(email_body: str, email: str, password: str) -> str:
+	def email_sender_tool(email_body: str, email: str) -> str:
 		"""This tool takes in the body of an email along with an email and password
 		  and then composes and sends an email. 
 			Returns a string saying it was successful or an error message"""
@@ -304,7 +304,7 @@ class Guitarmarket():
 		msg.set_content(email_body)
 
 		msg['Subject'] = "Guitar Comparisons"
-		msg['From'] = email
+		msg['From'] = email_address
 		msg['To'] = email
 
 		try:
@@ -312,7 +312,7 @@ class Guitarmarket():
 				server.ehlo()          # Identify with the server
 				server.starttls()      # Secure the connection
 				server.ehlo()          # Re-identify after starting TLS
-				server.login(email, password)
+				server.login(email_address, email_password)
 				server.send_message(msg)
 			return("Successfull")
 		except Exception as e:
