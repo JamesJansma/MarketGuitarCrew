@@ -214,18 +214,30 @@ class Guitarmarket():
 				
 				url = f"https://marketguitarcrew.onrender.com/static/images/guitar_{i}/image_{j}.jpg"
 
-				image_messages.append({
-					"type": "image_url",
-					"image_url": {
-						"url": url,
-						"detail": "high"
-					}
-				})
+				if os.path.exists(url):
+					image_messages.append({
+						"type": "image_url",
+						"image_url": {
+							"url": url,
+							"detail": "high"
+						}
+					})
+				else:
+					print(f"Missing image: {url}")
+
+				# image_messages.append({
+				# 	"type": "image_url",
+				# 	"image_url": {
+				# 		"url": url,
+				# 		"detail": "high"
+				# 	}
+				# })
 
 			if not image_messages:
 				print(f"No valid images found for listing {i}")
 				updated_listings.append(listing.model_dump())
 				continue
+
 			
 			print(f"Number of images given to gpt {len(image_messages)}")
 

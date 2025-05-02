@@ -28,7 +28,7 @@ listing_task:
         ,
         
           "Model": "Star caster electric guitar",
-          "Price": 75.0,
+          "Price": 400.0,
           "Condition": "used_like_new"
         ,
         
@@ -107,13 +107,13 @@ market_task:
           "Condition": "new"
         ,
         
-          "Model": "Acoustic and Electric Guitar with accessories",
-          "Price": 629.99,
+          "Model": "Epiphone Les Paul Special",
+          "Price": 225.99,
           "Condition": "new"
         ,
         
-          "Model": "Acoustic Guitar",
-          "Price": 149.99,
+          "Model": "Fender Stratocaster",
+          "Price": 599.99,
           "Condition": "new"
         
       ],
@@ -135,7 +135,7 @@ market_task:
         ,
         
           "Model": "Fender Starcaster",
-          "Price": 75.0,
+          "Price": 400.0,
           "Condition": "used_like_new"
         ,
         
